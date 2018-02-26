@@ -20,17 +20,44 @@
 #  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set -e
+set -eu
+
+CWD="$(pwd)"
+
+cleanup() {
+  cd "$CWD"
+  rm -rf mrustc/tmp
+  rm -rf rust/tmp
+}
 
 download() {
   dir="$1"
   mkdir -p "$dir"
 
-  # TODO md5sum checks
-  if [ -z "$(ls -A "$dir")" ] ; then
+  if [ -z "$(ls -A "$dir" 2> /dev/null)" ] ; then
     (
       cd "$dir"
-      wget $DOWNLOAD
+
+      idx=1
+      # shellcheck disable=SC2086
+      for url in $DOWNLOAD ; do
+        (
+          cd ../tmp
+          wget "$url"
+        )
+
+        expected_md5sum="$(printf "%s\\n" "$MD5SUM" | sed 's/[[:space:]][[:space:]]*/ /g' | tr ' ' '\n' | sed -n "$idx"p)"
+        actual_md5sum="$(find ../tmp -type f -exec md5sum {} \; | cut -d' ' -f1)"
+
+        if [ "$expected_md5sum" != "$actual_md5sum" ] ; then
+          printf "Mismatched md5sum for %s. Expected '%s', got '%s'\\n" "$(find ../tmp -type f -print)" "$expected_md5sum" "$actual_md5sum"
+          exit 1
+        fi
+
+        find ../tmp -type f -exec mv {} . \;
+
+        idx=$((idx + 1))
+      done
     )
   fi
 
@@ -40,13 +67,18 @@ download() {
 
 (
   cd mrustc
-  source ./mrustc.info
+  # shellcheck disable=SC1090
+  # shellcheck disable=SC1091
+  . ./mrustc.info
 
   printf "Building mrustc-%s\\n" "$VERSION"
 
-  download "src"
+  rm -rf "$(pwd)/tmp"
+  mkdir -p "$(pwd)/tmp"
 
-  if [ -z "$(ls -A ./pkg/mrustc-*.t?z)" ] ; then
+  download "$(pwd)/src"
+
+  if [ -z "$(ls -A ./pkg/mrustc-*.t?z 2> /dev/null)" ] ; then
     TMP="$(pwd)/tmp" OUTPUT="$(pwd)/pkg" bash ./mrustc.SlackBuild
     rm -rf "$(pwd)/tmp"
   fi
@@ -58,13 +90,18 @@ mkdir -p rust/pkg
 for rversion in 1.20.0 1.21.0 1.22.1 1.23.0 1.24.0 ; do
   (
     cd rust
-    source ./rust-"$rversion".info
+
+    # shellcheck disable=SC1090
+    . ./rust-"$rversion".info
 
     printf "Building rust-%s\\n" "$VERSION"
 
-    download "src-$rversion"
+    rm -rf "$(pwd)/tmp"
+    mkdir -p "$(pwd)/tmp"
 
-    if [ -z "$(ls -A ./pkg/rust-$rversion-*.t?z)" ] ; then
+    download "$(pwd)/src-$rversion"
+
+    if [ -z "$(ls -A ./pkg/rust-$rversion-*.t?z 2> /dev/null)" ] ; then
       if [ "$rversion" = "1.20.0" ] ; then
         FULL_BOOTSTRAP=yes
         SYSTEM_LLVM=no
@@ -73,11 +110,11 @@ for rversion in 1.20.0 1.21.0 1.22.1 1.23.0 1.24.0 ; do
         SYSTEM_LLVM=yes
       fi
 
-      if [ "$rversion" = "1.21.0" ] ; then
+      if [ "$rversion" = "1.21.0" ] || [ "$rversion" = "1.22.1" ] ; then
         SYSTEM_LLVM=no
       fi
 
-      MAKEFLAGS='-j20' TMP="$(pwd)/tmp" VERSION="$rversion" SYSTEM_LLVM="$SYSTEM_LLVM" FULL_BOOTSTRAP="$FULL_BOOTSTRAP" LOCAL_BOOTSTRAP=yes OUTPUT="$(pwd)/pkg" bash ./rust.SlackBuild
+      TMP="$(pwd)/tmp" VERSION="$rversion" SYSTEM_LLVM="$SYSTEM_LLVM" FULL_BOOTSTRAP="$FULL_BOOTSTRAP" LOCAL_BOOTSTRAP=yes OUTPUT="$(pwd)/pkg" bash ./rust.SlackBuild
       rm -rf "$(pwd)/tmp"
     fi
 
@@ -89,4 +126,4 @@ for rversion in 1.20.0 1.21.0 1.22.1 1.23.0 1.24.0 ; do
   )
 done
 
-printf "rust %s is now installed. Packages used to bootstrap are in %s" "$(rustc --version)" "$(pwd)/pkg"
+printf "rust %s is now installed. Packages used to bootstrap are in %s\\n" "$(rustc --version)" "$(pwd)/pkg"
