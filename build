@@ -29,6 +29,7 @@ cleanup() {
   rm -rf mrustc/tmp
   rm -rf rust/tmp
 }
+trap "cleanup" INT TERM HUP QUIT EXIT
 
 download() {
   dir="$1"
@@ -108,6 +109,10 @@ for rversion in 1.20.0 1.21.0 1.22.1 1.23.0 1.24.0 ; do
       else
         FULL_BOOTSTRAP=no
         SYSTEM_LLVM=no
+      fi
+
+      if [ "$rversion" = "1.24.0" ] ; then
+        SYSTEM_LLVM=yes
       fi
 
       TMP="$(pwd)/tmp" VERSION="$rversion" SYSTEM_LLVM="$SYSTEM_LLVM" FULL_BOOTSTRAP="$FULL_BOOTSTRAP" LOCAL_BOOTSTRAP=yes OUTPUT="$(pwd)/pkg" bash ./rust.SlackBuild

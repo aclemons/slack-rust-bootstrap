@@ -190,6 +190,20 @@ llvm-config = "/usr/bin/llvm-config"
 llvm-config = "/usr/bin/llvm-config"
 EOF
 
+  if [ "$(llvm-config --version)" = "5.0.1" ] ; then
+    cat << EOF > local-llvm-config
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+/usr/bin/llvm-config "\$@" | sed 's/-Wcovered-switch-default//g;s/-Wstring-conversion//g'
+EOF
+
+    chmod 0755 local-llvm-config
+    sed -i "s|/usr/bin/llvm-config|$(pwd)/local-llvm-config|" config.toml
+  fi
+
   # Link with -lffi in case of using system LLVM:
   zcat $CWD/link_libffi.diff.gz | patch -p1 --verbose
 fi
