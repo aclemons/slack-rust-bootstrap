@@ -1,0 +1,88 @@
+#!/bin/sh
+
+# Copyright 2018 Andrew Clemons, Wellington New Zealand
+# All rights reserved.
+#
+# Redistribution and use of this script, with or without modification, is
+# permitted provided that the following conditions are met:
+#
+# 1. Redistributions of this script must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
+#  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+#  EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+#  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+set -e
+
+download() {
+  dir="$1"
+  mkdir -p "$dir"
+
+  # TODO md5sum checks
+  if [ -z "$(ls -A "$dir")" ] ; then
+    (
+      cd "$dir"
+      wget $DOWNLOAD
+    )
+  fi
+
+  find . -type l -print0 | xargs --no-run-if-empty -0 -I xx unlink xx
+  find "$dir" -type f -print0 | xargs --no-run-if-empty -0 -I xx ln -s xx
+}
+
+(
+  cd mrustc
+  source ./mrustc.info
+
+  printf "Building mrustc-%s\\n" "$VERSION"
+
+  download "src"
+
+  if [ -z "$(ls -A ./pkg/mrustc-*.t?z)" ] ; then
+    TMP="$(pwd)/tmp" OUTPUT="$(pwd)/pkg" bash ./mrustc.SlackBuild
+    rm -rf "$(pwd)/tmp"
+  fi
+
+  upgradepkg --reinstall --install-new pkg/mrustc-*.t?z
+)
+
+mkdir -p rust/pkg
+for rversion in 1.20.0 1.21.0 1.22.1 1.23.0 1.24.0 ; do
+  (
+    cd rust
+    source ./rust-"$rversion".info
+
+    printf "Building rust-%s\\n" "$VERSION"
+
+    download "src-$rversion"
+
+    if [ -z "$(ls -A ./pkg/rust-$rversion-*.t?z)" ] ; then
+      if [ "$rversion" = "1.20.0" ] ; then
+        FULL_BOOTSTRAP=yes
+        SYSTEM_LLVM=no
+      else
+        FULL_BOOTSTRAP=no
+        SYSTEM_LLVM=yes
+      fi
+
+      MAKEFLAGS='-j20' TMP="$(pwd)/tmp" VERSION="$rversion" SYSTEM_LLVM="$SYSTEM_LLVM" FULL_BOOTSTRAP="$FULL_BOOTSTRAP" LOCAL_BOOTSTRAP=yes OUTPUT="$(pwd)/pkg" bash ./rust.SlackBuild
+      rm -rf "$(pwd)/tmp"
+    fi
+
+    if [ "$rversion" = "1.20.0" ] ; then
+      removepkg mrustc
+    fi
+
+    upgradepkg --reinstall --install-new pkg/rust-*$rversion*.t?z
+  )
+done
+
+printf "rust %s is now installed. Packages used to bootstrap are in %s" "$(rustc --version)" "$(pwd)/pkg"
