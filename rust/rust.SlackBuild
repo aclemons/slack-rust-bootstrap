@@ -2,8 +2,8 @@
 
 # Slackware build script for rust
 
-# Copyright 2017-2018  Andrew Clemons, Wellington, New Zealand
-# Copyright 2017  Patrick J. Volkerding, Sebeka, Minnesota, USA
+# Copyright 2017, 2018  Andrew Clemons, Wellington, New Zealand
+# Copyright 2017, 2018  Patrick J. Volkerding, Sebeka, Minnesota, USA
 # Copyright 2017  Stuart Winter
 # All rights reserved.
 #
@@ -104,6 +104,10 @@ TMP=${TMP:-/tmp/SBo}
 PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
 
+# Not needed, as the build will automatically use as many jobs as there are
+# cores.
+#NUMJOBS=${NUMJOBS:-" -j7 "}
+
 if [ "$ARCH" = "i586" ]; then
   SLKCFLAGS="-O2 -march=i586 -mtune=i686"
   LIBDIRSUFFIX=""
@@ -147,7 +151,8 @@ fi
 # binaries later.
 
 # LLVM in Slackware14.2 is now too old to build rust 1.24.0, so the rust build
-# falls back to building its own
+# falls back to building its own. You can force using the system LLVM with this
+# flag.
 SYSTEM_LLVM=${SYSTEM_LLVM:-no}
 
 cat << EOF > config.toml
@@ -191,6 +196,8 @@ llvm-config = "/usr/bin/llvm-config"
 EOF
 
   if [ "$(llvm-config --version)" = "5.0.1" ] ; then
+    # llvm-config --cflags returns a set of flags including -Wcovered-switch-default
+    # and -Wstring-conversion which gcc does not support, breaking the build.
     cat << EOF > local-llvm-config
 #!/bin/bash
 
