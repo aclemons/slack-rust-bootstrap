@@ -110,11 +110,11 @@ for rversion in 1.20.0 1.21.0 1.22.1 1.23.0 1.24.1 ; do
         SYSTEM_LLVM=no
       else
         FULL_BOOTSTRAP=no
-        SYSTEM_LLVM=no
+        SYSTEM_LLVM=yes
       fi
 
-      if [ "$rversion" = "1.24.1" ] ; then
-        SYSTEM_LLVM=yes
+      if [ "$rversion" = "1.22.1" ] ; then
+        SYSTEM_LLVM=no
       fi
 
       TMP="$(pwd)/tmp" VERSION="$rversion" SYSTEM_LLVM="$SYSTEM_LLVM" FULL_BOOTSTRAP="$FULL_BOOTSTRAP" LOCAL_BOOTSTRAP=yes OUTPUT="$(pwd)/pkg" bash ./rust.SlackBuild
