@@ -90,7 +90,7 @@ download() {
 )
 
 mkdir -p rust/pkg
-for rversion in 1.20.0 1.21.0 1.22.1 1.23.0 1.24.0 ; do
+for rversion in 1.20.0 1.21.0 1.22.1 1.23.0 1.24.1 ; do
   (
     cd rust
 
@@ -113,7 +113,7 @@ for rversion in 1.20.0 1.21.0 1.22.1 1.23.0 1.24.0 ; do
         SYSTEM_LLVM=no
       fi
 
-      if [ "$rversion" = "1.24.0" ] ; then
+      if [ "$rversion" = "1.24.1" ] ; then
         SYSTEM_LLVM=yes
       fi
 
