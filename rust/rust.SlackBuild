@@ -26,7 +26,7 @@
 
 PRGNAM=rust
 SRCNAM="${PRGNAM}c"
-VERSION=${VERSION:-1.24.0}
+VERSION=${VERSION:-1.24.1}
 
 # src/stage0.txt
 RSTAGE0_VERSION=${RSTAGE0_VERSION:-1.23.0}
@@ -150,7 +150,7 @@ fi
 # needed during the build, and then we'll strip the rpaths out of the
 # binaries later.
 
-# LLVM in Slackware14.2 is now too old to build rust 1.24.0, so the rust build
+# LLVM in Slackware14.2 is now too old to build rust 1.24.1, so the rust build
 # falls back to building its own. You can force using the system LLVM with this
 # flag.
 SYSTEM_LLVM=${SYSTEM_LLVM:-no}
