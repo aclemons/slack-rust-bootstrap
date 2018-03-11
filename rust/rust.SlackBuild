@@ -195,7 +195,7 @@ llvm-config = "/usr/bin/llvm-config"
 llvm-config = "/usr/bin/llvm-config"
 EOF
 
-  if [ "$(llvm-config --version)" = "5.0.1" ] ; then
+  if [ "$(llvm-config --version | cut -d. -f1)" -gt "3" ] ; then
     # llvm-config --cflags returns a set of flags including -Wcovered-switch-default
     # and -Wstring-conversion which gcc does not support, breaking the build.
     cat << EOF > local-llvm-config
