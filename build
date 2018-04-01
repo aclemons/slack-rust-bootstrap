@@ -69,7 +69,6 @@ download() {
 
 (
   cd mrustc
-  # shellcheck disable=SC1090
   # shellcheck disable=SC1091
   . ./mrustc.info
 
