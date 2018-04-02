@@ -183,6 +183,10 @@ codegen-tests = false
 ignore-git = true
 EOF
 
+if [ "$(echo "$VERSION" | cut -d. -f2)" -lt 25 ] ; then
+  sed -i '/thinlto/d' config.toml
+fi
+
 if [ "$ARCH" = "arm" ] ; then
   sed -i 's/"X86"/"X86;ARM"//' config.toml
 fi
