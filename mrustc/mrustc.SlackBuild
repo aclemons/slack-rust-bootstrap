@@ -23,7 +23,7 @@
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 PRGNAM=mrustc
-GITREV=${GITREV:-1a16def28935548e29be0fe5a632e25c83045924}
+GITREV=${GITREV:-4f98e4322ef7aabd3bbef8cd93c0980cd6eeeed1}
 VERSION=${VERSION:-git$(echo "$GITREV" | sed 's/^\(.\{7\}\).*$/\1/')}
 RUSTCVERSION=${RUSTCVERSION:-1.19.0}
 BUILD=${BUILD:-1}
@@ -54,6 +54,12 @@ elif [ "$ARCH" = "x86_64" ]; then
 else
   SLKCFLAGS="-O2"
   LIBDIRSUFFIX=""
+fi
+
+# https://github.com/thepowersgang/mrustc/issues/38#issuecomment-352158861
+if [ "$ARCH" != "x86_64" ]; then
+  echo "Sorry, mrustc currently only supports x86_64."
+  exit 1
 fi
 
 set -e

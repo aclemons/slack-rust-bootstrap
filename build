@@ -40,6 +40,11 @@ download() {
     (
       cd "$dir"
 
+      if [ ! -z "$DOWNLOAD_x86_64" ] ; then
+        DOWNLOAD="$DOWNLOAD_x86_64"
+        MD5SUM="$MD5SUM_x86_64"
+      fi
+
       idx=1
       # shellcheck disable=SC2086
       for url in $DOWNLOAD ; do
