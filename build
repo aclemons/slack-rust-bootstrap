@@ -89,7 +89,7 @@ download() {
 )
 
 mkdir -p rust/pkg
-for rversion in 1.20.0 1.21.0 1.22.1 1.23.0 1.24.1 1.25.0 1.26.2 1.27.0 ; do
+for rversion in 1.20.0 1.21.0 1.22.1 1.23.0 1.24.1 1.25.0 1.26.2 1.27.2 1.28.0 ; do
   (
     cd rust
 
@@ -106,13 +106,11 @@ for rversion in 1.20.0 1.21.0 1.22.1 1.23.0 1.24.1 1.25.0 1.26.2 1.27.0 ; do
     if [ -z "$(ls -A ./pkg/rust-$rversion-*.t?z 2> /dev/null)" ] ; then
       if [ "$rversion" = "1.20.0" ] ; then
         FULL_BOOTSTRAP=yes
-        SYSTEM_LLVM=no
       else
         FULL_BOOTSTRAP=no
-        SYSTEM_LLVM=no
       fi
 
-      TMP="$(pwd)/tmp" VERSION="$rversion" SYSTEM_LLVM="$SYSTEM_LLVM" FULL_BOOTSTRAP="$FULL_BOOTSTRAP" LOCAL_BOOTSTRAP=yes OUTPUT="$(pwd)/pkg" bash ./rust.SlackBuild
+      TMP="$(pwd)/tmp" VERSION="$rversion" SYSTEM_LLVM=no FULL_BOOTSTRAP="$FULL_BOOTSTRAP" LOCAL_BOOTSTRAP=yes OUTPUT="$(pwd)/pkg" bash ./rust.SlackBuild
       rm -rf "$(pwd)/tmp"
     fi
 

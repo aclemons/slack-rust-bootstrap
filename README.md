@@ -13,4 +13,4 @@ bootstrap rust completely from source (given you have a C++ compiler).
 mrustc targets rust 1.19.0, so this script will build mrustc, use it to build a
 stage0 1.19.0 rust and stdlib, use this stage0 to build 1.20.0 from source
 (full-bootstrap) and using that step through each release up to the latest
-release, which is currently 1.27.0.
+release, which is currently 1.28.0.
