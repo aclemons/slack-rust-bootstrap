@@ -2,7 +2,7 @@
 
 # Slackware build script for rust
 
-# Copyright 2017, 2018  Andrew Clemons, Wellington, New Zealand
+# Copyright 2017, 2018, 2019  Andrew Clemons, Wellington, New Zealand
 # Copyright 2017, 2018  Patrick J. Volkerding, Sebeka, Minnesota, USA
 # Copyright 2017  Stuart Winter
 # All rights reserved.
@@ -26,7 +26,7 @@
 
 PRGNAM=rust
 SRCNAM="${PRGNAM}c"
-VERSION=${VERSION:-1.31.1}
+VERSION=${VERSION:-1.32.0}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
 
@@ -37,9 +37,9 @@ SYSTEM_LLVM=${SYSTEM_LLVM:-NO}
 SYSTEM_LLVM=$(echo "$SYSTEM_LLVM" | tr '[:lower:]' '[:upper:]')
 
 # Bootstrap variables (might not be kept updated for latest Rust):
-RSTAGE0_VERSION=${RSTAGE0_VERSION:-1.30.0}
-RSTAGE0_DIR=${RSTAGE0_DIR:-2018-10-25}
-CSTAGE0_VERSION=${CSTAGE0_VERSION:-0.31.0}
+RSTAGE0_VERSION=${RSTAGE0_VERSION:-1.31.1}
+RSTAGE0_DIR=${RSTAGE0_DIR:-2018-12-20}
+CSTAGE0_VERSION=${CSTAGE0_VERSION:-0.32.0}
 CSTAGE0_DIR=${CSTAGE0_DIR:-$RSTAGE0_DIR}
 
 if [ -z "$ARCH" ]; then

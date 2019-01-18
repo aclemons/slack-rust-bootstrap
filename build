@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright 2018 Andrew Clemons, Wellington New Zealand
+# Copyright 2018-2019 Andrew Clemons, Wellington New Zealand
 # All rights reserved.
 #
 # Redistribution and use of this script, with or without modification, is
@@ -89,7 +89,7 @@ download() {
 )
 
 mkdir -p rust/pkg
-for rversion in 1.20.0 1.21.0 1.22.1 1.23.0 1.24.1 1.25.0 1.26.2 1.27.2 1.28.0 1.29.2 1.30.1 1.31.1 ; do
+for rversion in 1.20.0 1.21.0 1.22.1 1.23.0 1.24.1 1.25.0 1.26.2 1.27.2 1.28.0 1.29.2 1.30.1 1.31.1 1.32.0 ; do
   (
     cd rust
 
