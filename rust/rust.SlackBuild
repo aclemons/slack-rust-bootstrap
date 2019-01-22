@@ -321,11 +321,15 @@ for i in $( find $PKG/usr/man -type l ) ; do ln -s $( readlink $i ).gz $i.gz ; r
 # Add some documentation:
 mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
 cp -a *.md COPYRIGHT* LICENSE* $PKG/usr/doc/$PRGNAM-$VERSION
-# Include licenses from third party vendors:
-mkdir $PKG/usr/doc/$PRGNAM-$VERSION/vendor
-( cd src/vendor
-  tar cf - $(find . -maxdepth 2 | grep -e README -e LICENSE -e COPYING -e CHANGELOG -e PERFORMANCE -e UPGRADE ) | ( cd $PKG/usr/doc/$PRGNAM-$VERSION/vendor ; tar xf - )
-)
+
+if [ -e src/vendor ] ; then
+  # Include licenses from third party vendors:
+  mkdir $PKG/usr/doc/$PRGNAM-$VERSION/vendor
+  ( cd src/vendor
+    tar cf - $(find . -maxdepth 2 | grep -e README -e LICENSE -e COPYING -e CHANGELOG -e PERFORMANCE -e UPGRADE ) | ( cd $PKG/usr/doc/$PRGNAM-$VERSION/vendor ; tar xf - )
+  )
+fi
+
 cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
 
 mkdir -p $PKG/install
