@@ -26,7 +26,7 @@
 
 PRGNAM=rust
 SRCNAM="${PRGNAM}c"
-VERSION=${VERSION:-1.32.0}
+VERSION=${VERSION:-1.33.0}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
 
@@ -37,9 +37,9 @@ SYSTEM_LLVM=${SYSTEM_LLVM:-NO}
 SYSTEM_LLVM=$(echo "$SYSTEM_LLVM" | tr '[:lower:]' '[:upper:]')
 
 # Bootstrap variables (might not be kept updated for latest Rust):
-RSTAGE0_VERSION=${RSTAGE0_VERSION:-1.31.1}
-RSTAGE0_DIR=${RSTAGE0_DIR:-2018-12-20}
-CSTAGE0_VERSION=${CSTAGE0_VERSION:-0.32.0}
+RSTAGE0_VERSION=${RSTAGE0_VERSION:-1.32.0}
+RSTAGE0_DIR=${RSTAGE0_DIR:-2019-01-17}
+CSTAGE0_VERSION=${CSTAGE0_VERSION:-0.33.0}
 CSTAGE0_DIR=${CSTAGE0_DIR:-$RSTAGE0_DIR}
 
 if [ -z "$ARCH" ]; then
@@ -312,7 +312,9 @@ find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | gr
 
 # Remove any compiled-in RPATHs:
 find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
-  | cut -f 1 -d : | xargs -I xx patchelf --remove-rpath xx 2> /dev/null || true
+  | cut -f 1 -d : | while read elfobject ; do
+  patchelf --remove-rpath $elfobject || exit 1
+done
 
 # Compress man pages:
 find $PKG/usr/man -type f -exec gzip -9 {} \;
