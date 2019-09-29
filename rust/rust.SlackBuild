@@ -316,6 +316,9 @@ find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | gr
   patchelf --remove-rpath $elfobject || exit 1
 done
 
+# remove rubbish
+rm -rf $PKG/data
+
 # Compress man pages:
 find $PKG/usr/man -type f -exec gzip -9 {} \;
 for i in $( find $PKG/usr/man -type l ) ; do ln -s $( readlink $i ).gz $i.gz ; rm $i ; done
