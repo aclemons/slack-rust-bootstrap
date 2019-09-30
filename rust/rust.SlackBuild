@@ -247,6 +247,10 @@ if [ "$ARCH" = "x86_64" ] && [ "$LOCAL_BOOTSTRAP" = "yes" ] && [ "$(echo "$VERSI
   zcat $CWD/slackware64_local_bootstrap.diff.gz | patch -p1 --verbose || exit 1
 fi
 
+if [ "$(echo "$VERSION" | cut -d. -f 1)" -eq 1 ] && [ "$(echo "$VERSION" | cut -d. -f 2)" -eq 38 ] ; then
+  zcat $CWD/0001-WIP-minimize-the-rust-std-component.diff.gz | patch -p1 --verbose || exit 1
+fi
+
 chown -R root:root .
 find -L . \
  \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
