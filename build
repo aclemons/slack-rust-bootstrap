@@ -67,6 +67,11 @@ download() {
   find "$dir" -type f -print0 | xargs --no-run-if-empty -0 -I xx ln -s xx
 }
 
+if ! command -v patchelf > /dev/null 2>&1 ; then
+  printf >&2 "patchelf is required to build rust.\\n"
+  exit 1
+fi
+
 (
   cd mrustc
   # shellcheck disable=SC1091
