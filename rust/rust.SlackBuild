@@ -243,12 +243,24 @@ if [ "$LOCAL_BOOTSTRAP" = "yes" ] ; then
 fi
 
 
-if [ "$ARCH" = "x86_64" ] && [ "$LOCAL_BOOTSTRAP" = "yes" ] && [ "$(echo "$VERSION" | cut -d. -f 1)" -eq 1 ] && [ "$(echo "$VERSION" | cut -d. -f 2)" -gt 24 ] ; then
+if [ "$ARCH" = "x86_64" ] && [ "$LOCAL_BOOTSTRAP" = "yes" ] && [ "$(echo "$VERSION" | cut -d. -f 1)" -eq 1 ] && [ "$(echo "$VERSION" | cut -d. -f 2)" -gt 24 ] && [ "$(echo "$VERSION" | cut -d. -f 2)" -le 38 ]; then
   zcat $CWD/slackware64_local_bootstrap.diff.gz | patch -p1 --verbose || exit 1
+fi
+
+if [ "$ARCH" = "x86_64" ] && [ "$LOCAL_BOOTSTRAP" = "yes" ] && [ "$(echo "$VERSION" | cut -d. -f 1)" -eq 1 ] && [ "$(echo "$VERSION" | cut -d. -f 2)" -ge 39 ] ; then
+  zcat $CWD/slackware64_local_bootstrap_v2.diff.gz | patch -p1 --verbose || exit 1
 fi
 
 if [ "$(echo "$VERSION" | cut -d. -f 1)" -eq 1 ] && [ "$(echo "$VERSION" | cut -d. -f 2)" -eq 38 ] ; then
   zcat $CWD/0001-WIP-minimize-the-rust-std-component.diff.gz | patch -p1 --verbose || exit 1
+fi
+
+if [ "$(echo "$VERSION" | cut -d. -f 1)" -eq 1 ] && [ "$(echo "$VERSION" | cut -d. -f 2)" -eq 39 ] ; then
+  zcat $CWD/0001-WIP-minimize-the-rust-std-component_v2.diff.gz | patch -p1 --verbose || exit 1
+fi
+
+if [ "$(echo "$VERSION" | cut -d. -f 1)" -eq 1 ] && [ "$(echo "$VERSION" | cut -d. -f 2)" -eq 39 ] ; then
+  zcat $CWD/hack.diff.gz | patch -p1 --verbose || exit 1
 fi
 
 chown -R root:root .
